@@ -10,9 +10,10 @@ class cliHandler:
 
     def appConfig(self):
         configRsc = configuration()
-        self.__config = configRsc.getConfig()
+        self.__config = configRsc.get()
 
     def run(self):
         self.appArgs()
         self.appConfig()
+        print(self.__config)
         return 0
