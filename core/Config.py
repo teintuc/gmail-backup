@@ -11,6 +11,8 @@ class configuration:
 
     __configFileName = "config"
 
+    __configFileMode = 0o400
+
     __configSections = [
         'server',
         'backup'
@@ -67,6 +69,7 @@ class configuration:
         with open(self.__configFilePath, 'w') as configfile:
             self.__configRsc.write(configfile)
             configfile.close()
+        os.chmod(self.__configFilePath, self.__configFileMode)
 
     def get(self):
         # If we don't have a config file, we generate it with information from the user
