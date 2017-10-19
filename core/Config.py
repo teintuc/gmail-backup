@@ -25,6 +25,7 @@ class configuration:
     ]
 
     def __init__(self):
+        # Get a config parse rsc
         self.__configRsc = configparser.RawConfigParser()
         # Set config file path
         self.__configFilePath = os.environ["HOME"] + "/" + self.__configPath + "/" + self.__configFileName
@@ -68,8 +69,11 @@ class configuration:
             configfile.close()
 
     def get(self):
+        # If we don't have a config file, we generate it with information from the user
         if not os.path.exists(self.__configFilePath):
             print("Configuration file " + self.__configFilePath + " not found. Generating it ....")
             self.__generate()
 
-        return self.__configRsc.read(self.__configFilePath)
+        # What ever happen, we read the configuration
+        self.__configRsc.read(self.__configFilePath)
+        return self.__configRsc
