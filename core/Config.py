@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import os
+import sys
 import errno
 import configparser
 
@@ -10,11 +11,25 @@ class configuration:
 
     __configFileName = "config"
 
+    __configSections = [
+        'server',
+        'backup'
+    ]
+
+    __userDataQuery = [
+            ('server', 'address', 'Server address', None),
+            ('server', 'directory', 'Email directory (ex: INBOX)', None),
+            ('server', 'email', 'Email address', None),
+            ('server', 'pass', 'Email password', None),
+            ('backup', 'path', 'Backup directory', os.path.expanduser)
+    ]
+
     def __init__(self):
+        self.__configRsc = configparser.RawConfigParser()
         # Set config file path
         self.__configFilePath = os.environ["HOME"] + "/" + self.__configPath + "/" + self.__configFileName
 
-    def __makeConfigDir(self):
+    def __makeDir(self):
         # Attempt to create the configuration directory
         configDir = os.environ["HOME"] + "/" + self.__configPath
         try:
@@ -25,19 +40,36 @@ class configuration:
             else:
                 print("Backup directory: " + configDir + " already exists")
 
-    def __generateConfiguration(self, configRsc):
-        self.__makeConfigDir()
-        configRsc.add_section('Section1')
-        # configRsc.set('Section1', 'an_int', '15')
+    def __getUserData(self):
+        for section in self.__configSections:
+            self.__configRsc.add_section(section)
 
-        # Writing our configuration file to 'example.cfg'
-        with open(self.__configFilePath, 'wb') as configfile:
-            configRsc.write(configfile)
+        for section, key, prompt, modifier in self.__userDataQuery:
+            answer = self.__writePrompt(prompt)
+            if len(answer) > 0:
+                # If we have a modifier
+                if modifier != None:
+                    answer = modifier(answer)
+                # Set the answer in the configuration
+                self.__configRsc.set(section, key, answer)
 
-    def getConfig(self):
-        configRsc = configparser.RawConfigParser()
+    def __writePrompt(self, prompt):
+        sys.stdout.write(prompt + ": ")
+        sys.stdout.flush()
+        return input()
+
+    def __generate(self):
+        self.__getUserData()
+
+        # Writing our configuration
+        self.__makeDir()
+        with open(self.__configFilePath, 'w') as configfile:
+            self.__configRsc.write(configfile)
+            configfile.close()
+
+    def get(self):
         if not os.path.exists(self.__configFilePath):
             print("Configuration file " + self.__configFilePath + " not found. Generating it ....")
-            self.__generateConfiguration(configRsc)
+            self.__generate()
 
-        return configRsc.read(self.__configFilePath)
+        return self.__configRsc.read(self.__configFilePath)
