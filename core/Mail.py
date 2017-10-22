@@ -19,7 +19,6 @@ class client:
         self.__selectedMailbox = True
 
     def saveMailbox(self, mailbox, callback = None):
-        self.__imapRsc.list()
         self.__selectDir(mailbox)
 
         ret, data = self.__imapRsc.search(None, self.__search)
