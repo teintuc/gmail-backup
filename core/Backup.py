@@ -1,7 +1,9 @@
 #!/usr/bin/env python
 
 import os
+import time
 import email
+import email.utils
 import datetime
 import mimetypes
 
@@ -22,7 +24,9 @@ class backup:
         return email.utils.parseaddr(rawEmailAddress)[1]
 
     def __formatDate(self, rawEmailDate, outFormat = '%d/%m/%Y %H:%M:%S'):
-        d = datetime.datetime.strptime(rawEmailDate, '%a, %d %b %Y %H:%M:%S %z')
+        parsedEmailDate = email.utils.parsedate(rawEmailDate)
+        emailTimeStamp = time.mktime(parsedEmailDate)
+        d = datetime.datetime.fromtimestamp(emailTimeStamp)
         return datetime.date.strftime(d, outFormat)
 
     def __createEmailBackupPath(self, msg):
