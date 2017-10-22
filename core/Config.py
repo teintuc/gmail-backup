@@ -1,9 +1,10 @@
 #!/usr/bin/env python
 
 import os
-import sys
-import errno
 import configparser
+
+from core.Utils import Ui
+from core.Utils import FileSystem
 
 class configuration:
 
@@ -11,7 +12,7 @@ class configuration:
 
     __configFileName = "config"
 
-    __configFileMode = 0o400
+    __configFileMode = 0o600
 
     __configSections = [
         'server',
@@ -30,25 +31,17 @@ class configuration:
         # Get a config parse rsc
         self.__configRsc = configparser.RawConfigParser()
         # Set config file path
-        self.__configFilePath = os.environ["HOME"] + "/" + self.__configPath + "/" + self.__configFileName
-
-    def __makeDir(self):
-        # Attempt to create the configuration directory
-        configDir = os.environ["HOME"] + "/" + self.__configPath
-        try:
-            os.makedirs(configDir)
-        except OSError as e:
-            if e.errno != errno.EEXIST:
-                raise  # raises the error again
-            else:
-                print("Backup directory: " + configDir + " already exists")
+        self.__configDir = os.path.join(os.environ["HOME"], self.__configPath)
+        self.__configFilePath = os.path.join(self.__configDir, self.__configFileName)
 
     def __getUserData(self):
+        # Set the sections
         for section in self.__configSections:
             self.__configRsc.add_section(section)
-
+        # Set the values
+        uiRsc = Ui()
         for section, key, prompt, modifier in self.__userDataQuery:
-            answer = self.__writePrompt(prompt)
+            answer = uiRsc.getValue(prompt)
             if len(answer) > 0:
                 # If we have a modifier
                 if modifier != None:
@@ -56,16 +49,12 @@ class configuration:
                 # Set the answer in the configuration
                 self.__configRsc.set(section, key, answer)
 
-    def __writePrompt(self, prompt):
-        sys.stdout.write(prompt + ": ")
-        sys.stdout.flush()
-        return input()
-
     def __generate(self):
         self.__getUserData()
 
         # Writing our configuration
-        self.__makeDir()
+        fsRsc = FileSystem()
+        fsRsc.makeDirs(self.__configDir)
         with open(self.__configFilePath, 'w') as configfile:
             self.__configRsc.write(configfile)
             configfile.close()
