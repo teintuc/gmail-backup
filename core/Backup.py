@@ -28,12 +28,6 @@ class backup:
         d = datetime.datetime.fromtimestamp(emailTimeStamp)
         return datetime.date.strftime(d, outFormat)
 
-    def __createEmailBackupPath(self, msg):
-        emailFrom = self.__parseEmail(msg['From'])
-        emailDate = self.__formatDate(msg['Date'], '%A %d %b %Y %H:%M:%S')
-        self.__currentBackupEmailPath = os.path.join(self.__backupDir, emailFrom, emailDate)
-        self.__fsRsc.makeDirs(self.__currentBackupEmailPath)
-
     def __savePart(self, part, index):
         if part.get_content_maintype() == self.__multiKeyWord:
             return
@@ -50,8 +44,12 @@ class backup:
 
     def save(self, rawEmail):
         msg = email.message_from_string(rawEmail.decode("utf-8"))
-        self.__createEmailBackupPath(msg)
-        print("> %s => %s" % (self.__formatDate(msg['Date']), self.__parseEmail(msg['From'])))
+        emailFrom = self.__parseEmail(msg['From'])
+        emailDate = self.__formatDate(msg['Date'], '%A %d %b %Y %H:%M:%S')
+        self.__currentBackupEmailPath = os.path.join(self.__backupDir, emailFrom, emailDate)
+        print("> %s => %s" % (emailDate, emailFrom))
+
+        self.__fsRsc.makeDirs(self.__currentBackupEmailPath)
         index = 0
         for part in msg.walk():
             self.__savePart(part, index)
