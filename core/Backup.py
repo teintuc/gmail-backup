@@ -3,7 +3,6 @@
 import os
 import time
 import email
-import email.utils
 import datetime
 import mimetypes
 
