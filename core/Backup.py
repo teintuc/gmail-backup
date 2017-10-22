@@ -48,7 +48,7 @@ class backup:
     def save(self, rawEmail):
         msg = email.message_from_string(rawEmail.decode("utf-8"))
         self.__createEmailBackupPath(msg)
-        print("> " + self.__formatDate(msg['Date']) + " => " + self.__parseEmail(msg['From']))
+        print("> %s => %s" % (self.__formatDate(msg['Date']), self.__parseEmail(msg['From'])))
         index = 0
         for part in msg.walk():
             self.__savePart(part, index)

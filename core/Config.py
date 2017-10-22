@@ -63,7 +63,7 @@ class configuration:
     def get(self):
         # If we don't have a config file, we generate it with information from the user
         if not os.path.exists(self.__configFilePath):
-            print("Configuration file " + self.__configFilePath + " not found. Generating it ....")
+            print("Configuration file %s not found. Generating it ...." % self.__configFilePath)
             self.__generate()
 
         # What ever happen, we read the configuration
