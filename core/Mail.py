@@ -22,9 +22,17 @@ class client:
         self.__imapRsc.list()
         self.__selectDir(mailbox)
 
-        typ, data = self.__imapRsc.search(None, self.__search)
+        ret, data = self.__imapRsc.search(None, self.__search)
+        if ret != 'OK':
+            print("No email found")
+            return
+
         for num in data[0].split():
-            typ, data = self.__imapRsc.fetch(num, self.__rfc)
+            ret, data = self.__imapRsc.fetch(num, self.__rfc)
+            if ret != 'OK':
+                print("Can't fetch the email")
+                continue
+
             if callback is not None:
                 callback(data[0][1])
 
