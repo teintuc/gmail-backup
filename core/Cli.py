@@ -34,7 +34,7 @@ class cliHandler:
         # Create a mail client and save the emails
         self.__mailRsc = client()
         self.__mailRsc.connect(self.__config.get('server', 'address'), self.__config.get('server', 'email'), self.__config.get('server', 'pass'))
-        self.__mailRsc.saveMailbox(self.__config.get('server', 'directory'), self.backupRsc.save)
+        self.__mailRsc.saveMailbox(self.__config.get('server', 'mailbox'), self.backupRsc.save)
         self.__mailRsc.close()
 
         return 0

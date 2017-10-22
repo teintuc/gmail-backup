@@ -21,7 +21,7 @@ class configuration:
 
     __userDataQuery = [
             ('server', 'address', 'Server address', None),
-            ('server', 'directory', 'Email directory (ex: INBOX)', None),
+            ('server', 'mailbox', 'Mailbox (ex: INBOX)', None),
             ('server', 'email', 'Email address', None),
             ('server', 'pass', 'Email password', None),
             ('backup', 'path', 'Backup directory', os.path.expanduser)
