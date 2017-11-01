@@ -6,7 +6,7 @@ class client:
 
     __rfc = '(RFC822)'
 
-    __search = 'ALL'
+    __defaultSearchCriteria = 'ALL'
 
     __selectedMailbox = False
 
@@ -18,10 +18,17 @@ class client:
         self.__imapRsc.select(mailbox)
         self.__selectedMailbox = True
 
-    def saveMailbox(self, mailbox, callback = None):
+    def __getSearchCriteria(self, lastMailDate):
+        criteria = self.__defaultSearchCriteria
+        if lastMailDate is not None:
+            criteria = 'SINCE ' + lastMailDate
+        return criteria
+
+
+    def saveMailbox(self, mailbox, lastMailDate, callback = None):
         self.__selectDir(mailbox)
 
-        ret, data = self.__imapRsc.search(None, self.__search)
+        ret, data = self.__imapRsc.search(None, self.__getSearchCriteria(lastMailDate))
         if ret != 'OK':
             print("No email found")
             return

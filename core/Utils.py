@@ -18,6 +18,12 @@ class FileSystem:
         fd.close()
         os.chmod(path, mode)
 
+    def readFromFile(self, path):
+        fd = open(path, 'r')
+        content = fd.readline()
+        fd.close()
+        return content
+
 class Ui:
     def getValue(self, prompt):
         sys.stdout.write(prompt + ": ")

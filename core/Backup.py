@@ -10,6 +10,8 @@ from core.Utils import FileSystem
 
 class backup:
 
+    __timeMarkFileName = '.lastMail'
+
     __multiKeyWord = 'multipart'
 
     __defaultExt = '.bin'
@@ -19,6 +21,8 @@ class backup:
         self.__fsRsc = FileSystem()
         # Create the base backup dir
         self.__fsRsc.makeDirs(self.__backupDir)
+        # Last mail file path
+        self.__lastMailFilePath = os.path.join(self.__backupDir, self.__timeMarkFileName)
 
     def __formatDate(self, rawEmailDate, outFormat = '%d/%m/%Y %H:%M:%S'):
         parsedEmailDate = email.utils.parsedate(rawEmailDate)
@@ -40,6 +44,15 @@ class backup:
         filename = self.__getPartFileName(part, partIndex)
         self.__fsRsc.writeToFile(os.path.join(self.__currentBackupEmailPath, filename), part.get_payload(decode=True))
 
+    def __saveLastMailDate(self, date):
+        self.__fsRsc.writeToFile(self.__lastMailFilePath, date+'\n', 'w')
+
+    def getLastMailDate(self):
+        if not os.path.exists(self.__lastMailFilePath):
+            return None
+
+        return self.__fsRsc.readFromFile(self.__lastMailFilePath).rstrip()
+
     def save(self, rawEmail):
         msg = email.message_from_string(rawEmail.decode("utf-8"))
         emailFrom = email.utils.parseaddr(msg['From'])[1]
@@ -55,3 +68,5 @@ class backup:
 
             self.__savePart(part, partIndex)
             partIndex += 1
+        # Save the email date
+        self.__saveLastMailDate(self.__formatDate(msg['Date'], '%d-%b-%Y'))

@@ -31,10 +31,11 @@ class cliHandler:
         self.appConfig()
         # Get a backup resource in order to save the mails
         self.backupRsc = backup(self.__config.get('backup', 'path'))
+        lastMailDate = self.backupRsc.getLastMailDate()
         # Create a mail client and save the emails
         self.__mailRsc = client()
         self.__mailRsc.connect(self.__config.get('server', 'address'), self.__config.get('server', 'email'), self.__config.get('server', 'pass'))
-        self.__mailRsc.saveMailbox(self.__config.get('server', 'mailbox'), self.backupRsc.save)
+        self.__mailRsc.saveMailbox(self.__config.get('server', 'mailbox'), lastMailDate, self.backupRsc.save)
         self.__mailRsc.close()
 
         return 0
