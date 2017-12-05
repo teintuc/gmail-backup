@@ -24,8 +24,7 @@ class client:
             criteria = 'SINCE ' + lastMailDate
         return criteria
 
-
-    def saveMailbox(self, mailbox, lastMailDate, callback = None):
+    def saveMailbox(self, mailbox, lastMailDate = None, callback = None):
         self.__selectDir(mailbox)
 
         ret, data = self.__imapRsc.search(None, self.__getSearchCriteria(lastMailDate))
